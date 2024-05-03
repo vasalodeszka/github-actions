@@ -1,0 +1,15 @@
+# name is a reserved keyword and always have to be 'name'
+# on is also a reserved keyword, specifies when this workflow should be executed.
+# workflow_dispatch is an event that waits for the user to manually start this workflow.
+
+name: First Workflow
+on: workflow_dispatch
+
+jobs:
+  first-job: # This is the name of the job
+    runs-on: ubuntu-latest # The executing environment
+    steps:
+      - name: First step - print greeting
+        run: echo 'Hello' # we are defining a command that will be executed in the command line.
+      - name: Second step - print goodbye
+        run: echo 'Done, Bye!'
