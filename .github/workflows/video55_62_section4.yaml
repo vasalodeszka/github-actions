@@ -1,7 +1,7 @@
 name: Section 4 workflow
 on:
   pull_request:
-    types: [opened, edited]
+    types: [opened]
   workflow_dispatch:
 jobs:
   deploy:
