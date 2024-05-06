@@ -1,0 +1,47 @@
+name: Section 5 workflow
+on:
+  push:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint code
+        run: npm run lint
+      - name: Test code
+        run: npm run test
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
+      - name: Build website
+        run: npm run build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with: 
+          name: dist-files # name is up to you
+          path: dist # path to the folder you want to upload the files
+          # path: dist | # path to the folder you want to upload the files
+          #   dist
+          #   package.json
+  deploy:
+    # The files that are produced in the build job will not automatically exist 
+    # in the deploy job because this runs on a different machine,
+    needs: build # deploy job must run after the build job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-files # we should use the same name as we used for uploading artifacts
+      - name: Deploy
+        run: echo "Deploying..."
