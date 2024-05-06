@@ -1,5 +1,5 @@
 name: Deploy Project
-on: push
+on: [push, workflow_dispatch] # this workflow will run on push and manual trigger
 jobs:
   test:
     runs-on: ubuntu-latest
