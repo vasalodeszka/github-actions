@@ -2,8 +2,8 @@ name: Section 4 workflow
 on:
   pull_request:
     types: [opened, edited]
-    branches:
-      - main # main
+    branches: # the branches that will be targetted 
+      - main # main, PR to the main branch
       - 'dev-*' # dev-new
       - 'feat/**' # feat/new/button
   workflow_dispatch:
