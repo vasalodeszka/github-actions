@@ -1,4 +1,4 @@
-name: Deploy Project
+name: Video 40-46 - Deploy Project
 on: [push, workflow_dispatch] # this workflow will run on push and manual trigger
 jobs:
   test:

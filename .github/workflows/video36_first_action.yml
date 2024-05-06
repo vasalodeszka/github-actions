@@ -2,7 +2,7 @@
 # on is also a reserved keyword, specifies when this workflow should be executed.
 # workflow_dispatch is an event that waits for the user to manually start this workflow.
 
-name: First Workflow
+name: Video 36 - First Workflow
 on: workflow_dispatch
 
 jobs:
