@@ -2,7 +2,18 @@ name: Section 4 workflow
 on:
   pull_request:
     types: [opened, edited]
+    branches:
+      - main # main
+      - 'dev-*' # dev-new
+      - 'feat/**' # feat/new/button
   workflow_dispatch:
+  push:
+    branches:
+      - main # only main branch
+      - 'dev-*' # Match any branch that starts with 'dev-'m does not allow more slashes, eg: 'dev-new-feature'
+      - 'feat/**' # Allows other slashes in the branch namem eg: 'feat/new/menuitem'
+    paths-ignore:
+      - '.github/workflows/*' # Do not start a workflow when a file is changed in the .github/workflows folder
 jobs:
   deploy:
     runs-on: ubuntu-latest
