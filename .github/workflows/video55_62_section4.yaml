@@ -1,0 +1,21 @@
+name: Section 4 workflow
+on:
+  pull_request:
+    types: [opened, edited]
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output event data
+        run: echo "${{ toJSON(github.event) }}"
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests
+        run: npm run test
+      - name: Build project
+        run: npm run build
+      - name: Deploy project
+        run: echo "Deploying project..."
