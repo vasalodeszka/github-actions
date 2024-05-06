@@ -9,8 +9,16 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v4
+        # we should do the caching at the first occurance of the step what we want to cache
+        # to add caching, we must add a new step before the step that actually produces the files that should be cached
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm # This is the path used by this npm tool for its internal dependency cache.
+          #  the hashFiles function which simply produces a unique hash value based on a file path we pass to it
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }} # this key will be used for retrieving the cache in the future and recreating that folder on the runner machine
       - name: Install dependencies
-        run: npm ci
+        run: npm install
       - name: Lint code
         run: npm run lint
       - name: Test code
@@ -18,13 +26,30 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    # outputs is a new key at the top level of this job definition
+    # outputs allows us to define any outputs of our choice, and as many outputs as we want.
+    outputs:
+      # this name is up to you, by which you later will be able to access the output value
+      script-file: $ {{ steps.publish.outputs.filename }}
     steps:
       - name: Get code
         uses: actions/checkout@v4
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
-        run: npm ci
+        run: npm install
       - name: Build website
         run: npm run build
+      - name: Publish JS filename
+        id: publish # we'll be able to access data from that step via that ID.
+      # we're just setting an output name (script-file) for this step here, not for the overall job.
+      # and on the right side of the equal sign, you have the value that should be accessible under that output name.
+      # $GITHUB_OUTPUT: Now, what this does is it targets a file, a special file created by GitHub in the environment in which your job runs
+      # where the output key-value pair is written to.
+        run: find dist/assets/*.js -type f -execdir echo 'filename={}' >> $GITHUB_OUTPUT ';'
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with: 
@@ -43,5 +68,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist-files # we should use the same name as we used for uploading artifacts
+      - name: Output filename
+        run: echo "${{ needs.build.outputs.script-file }}"
       - name: Deploy
         run: echo "Deploying..."
