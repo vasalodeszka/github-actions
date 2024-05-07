@@ -1,0 +1,48 @@
+name: Deployment
+on:
+  push:
+    branches:
+      - main
+      - dev
+# Setting this on workflow level simply means, that this environment variable,
+# this MONGODB_DB_NAME variable, will be available in all jobs
+# unless a job overrides this variable by defining a variable of the same name,
+env:
+  MONGODB_DB_NAME: github-actions-demo
+jobs:
+  test:
+    env:
+      MONGODB_CLUSTER_ADDRESS: localhost
+      MONGODB_USERNAME: admin
+      MONGODB_PASSWORD: admin
+      PORT: 3000
+    environment: testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-deps-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        run: npm ci
+      - name: Run server
+        # Whenever you need to use an environment variable in such a run instruction, you can interpolate it
+        # by using dollar sign and then the name of the environment variable, in this case port.
+        run: npm start & npx wait-on http://127.0.0.1:$PORT
+      - name: Run tests
+        run: npm test
+      - name: Output information
+        # access a specific environment-variable context object provided by GitHub, and that's the env object.
+        run: |
+          echo "MONGODB_USERNAME: ${{ env.MONGODB_USERNAME }}"
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output information
+        run: |        
+          echo "MONGODB_USERNAME: ${{ env.MONGODB_USERNAME }}" # This will not work because the environment variable is not available in the deploy job
+          echo "MONGODB_DB_NAME: ${{ env.MONGODB_DB_NAME }}" # This will work because the environment variable is available thru the whole workflow
