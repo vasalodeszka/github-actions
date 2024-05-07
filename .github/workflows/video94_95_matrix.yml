@@ -1,0 +1,33 @@
+name: Matrix demo
+on: push
+jobs:
+  build:
+    continue-on-error: true
+    strategy:
+      matrix:
+        node-version: [12, 14, 16]
+        operating-system: [ubuntu-latest, windows-latest, macos-latest]
+        # This allows you to include/exclude a list with dashes of key values that should be included
+        # without adding a bunch of new combinations.
+        include:
+          - node-version: 18
+            operating-system: ubuntu-latest
+        exclude:
+          - node-version: 12
+            operating-system: windows-latest
+    runs-on: $ {{ matrix.operating-system }}
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Install NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: npm install
+      - name: Build project
+        run: npm run build
+
+# And the idea behind a matrix simply is that you can run the same job
+# with different configurations for example, on different runners or different node versions
+# or any other values you might be interested in changing at the same time.
