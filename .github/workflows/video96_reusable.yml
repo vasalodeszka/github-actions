@@ -1,0 +1,33 @@
+name: Reusable deploy
+# we don't wanna run this workflow whenever we push or when a poll request
+# is opened or anything like this. Instead, we wanna run this workflow from inside other workflows.
+on: 
+  workflow_call:
+    inputs: # it is a reserved key
+      artifact-name:
+        description: The name of the deployable artifact files # provided by you
+        required: true # this workflow should fail if we're not getting this input.
+        default: dist #  if we did not get any other artifact name, dist is the value that should be used down there.
+        type: string
+    outputs:
+      result:
+        description: The result of the operation
+        value: ${{ jobs.deploy.outputs.outcome }}
+    # secrets:
+    #   some-secret:
+    #     required: true
+jobs:
+  deploy:
+    outputs:
+      outcome: ${{ steps.set-result.outputs.step-result }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+      - name: Output information
+        run: echo "Deploying and uploading..."
+      - name: Set result output
+        id: set-result
+        run: echo "step-result=success" >> $GITHUB_OUTPUT
