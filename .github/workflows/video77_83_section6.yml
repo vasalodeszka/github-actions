@@ -13,8 +13,11 @@ jobs:
   test:
     env:
       MONGODB_CLUSTER_ADDRESS: localhost
-      MONGODB_USERNAME: admin
-      MONGODB_PASSWORD: admin
+      # MONGODB_USERNAME: admin
+      # MONGODB_PASSWORD: admin
+      # you can edit secrets in repository level and organization level in GitHub
+      MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
+      MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
       PORT: 3000
     environment: testing
     runs-on: ubuntu-latest
