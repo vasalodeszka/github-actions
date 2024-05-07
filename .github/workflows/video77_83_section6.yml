@@ -11,6 +11,7 @@ env:
   MONGODB_DB_NAME: github-actions-demo
 jobs:
   test:
+    environment: testing # This is a way to define an environment for a job
     env:
       MONGODB_CLUSTER_ADDRESS: localhost
       # MONGODB_USERNAME: admin
@@ -19,7 +20,6 @@ jobs:
       MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
       MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
       PORT: 3000
-    environment: testing
     runs-on: ubuntu-latest
     steps:
       - name: Get Code
